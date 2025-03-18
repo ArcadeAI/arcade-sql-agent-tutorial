@@ -40,7 +40,7 @@ def sql_toolkit_query_customer_eval_suite() -> EvalSuite:
         expected_tool_calls=[ExpectedToolCall(
             func=query_customer_data, args={
                 "filter_by_name": "David",
-                "columns_to_select": ["Name", "Email"],
+                "columns_to_select": ["name", "email"],
             })],
         rubric=rubric,
         critics=[
@@ -55,7 +55,7 @@ def sql_toolkit_query_customer_eval_suite() -> EvalSuite:
         expected_tool_calls=[ExpectedToolCall(
             func=query_customer_data, args={
                 "filter_by_age": 44,
-                "columns_to_select": ["Email"],
+                "columns_to_select": ["email"],
             })],
         rubric=rubric,
         critics=[
@@ -70,7 +70,7 @@ def sql_toolkit_query_customer_eval_suite() -> EvalSuite:
         expected_tool_calls=[ExpectedToolCall(
             func=query_customer_data, args={
                 "filter_by_location": "CA",
-                "columns_to_select": ["Name", "Occupation"],
+                "columns_to_select": ["name", "occupation"],
             })],
         rubric=rubric,
         critics=[
@@ -85,7 +85,7 @@ def sql_toolkit_query_customer_eval_suite() -> EvalSuite:
         expected_tool_calls=[ExpectedToolCall(
             func=query_customer_data, args={
                 "filter_by_location": "Los Angeles, CA",
-                "order_by": "Age",
+                "order_by": "age",
                 "limit": 100,
             })],
         rubric=rubric,

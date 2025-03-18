@@ -1,12 +1,14 @@
 [tool.poetry]
 name = "arcade_sql_customers"
 version = "0.0.1"
-description = "Query the customer database using natural language"
+description = "Query the customers database with an"
 authors = ["torresmateo <mateo@arcade.dev>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-arcade-ai = "1.0.*"
+arcade-ai = "^1.1.0"
+psycopg2-binary = "^2.9.10"
+python-dotenv = "^1.0.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^8.3.0"

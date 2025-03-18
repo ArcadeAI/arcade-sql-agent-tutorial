@@ -1,17 +1,28 @@
-import os
 import logging
-import sqlite3
+import psycopg2
+import urllib
+
+from arcade.sdk import ToolContext
 
 # Configure the logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def get_database_connection(database_url: str) -> sqlite3.Connection:
+def get_database_connection(context: ToolContext):
+    conn_string = context.get_secret("database_url")
+    logger.info(conn_string)
+    p = urllib.parse.urlparse(conn_string)
     try:
-        conn = sqlite3.connect(database_url)
+        conn = psycopg2.connect(
+            dbname=p.path[1:],
+            user=p.username,
+            password=p.password,
+            host=p.hostname,
+            port=p.port,
+        )
         logger.info("Database connection established.")
         return conn
-    except sqlite3.Error as e:
+    except psycopg2.OperationalError as e:
         logger.error(f"Failed to connect to the database: {e}")
         raise e

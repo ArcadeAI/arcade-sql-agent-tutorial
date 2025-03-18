@@ -1,73 +1,40 @@
-# sql_customers
+<div style="display: flex; justify-content: center; align-items: center;">
+  <img
+    src="https://docs.arcade.dev/images/logo/arcade-logo.png"
+    style="width: 250px;"
+  >
+</div>
 
-Query the customer database using natural language
+<div style="display: flex; justify-content: center; align-items: center; margin-bottom: 8px;">
+  <img src="https://img.shields.io/github/v/release/torresmateo/sql_customers" alt="GitHub release" style="margin: 0 2px;">
+  <img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python version" style="margin: 0 2px;">
+  <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License" style="margin: 0 2px;">
+  <img src="https://img.shields.io/pypi/v/arcade_sql_customers" alt="PyPI version" style="margin: 0 2px;">
+</div>
+<div style="display: flex; justify-content: center; align-items: center;">
+  <a href="https://github.com/torresmateo/sql_customers" target="_blank">
+    <img src="https://img.shields.io/github/stars/torresmateo/sql_customers" alt="GitHub stars" style="margin: 0 2px;">
+  </a>
+  <a href="https://github.com/torresmateo/sql_customers/fork" target="_blank">
+    <img src="https://img.shields.io/github/forks/torresmateo/sql_customers" alt="GitHub forks" style="margin: 0 2px;">
+  </a>
+</div>
 
-## Creating your new toolkit repo
+<br>
+<br>
 
-1. Run `arcade new` and answer all the questions
-2. Navigate to your new toolkit directory:
-   ```bash
-   cd sql_customers
-   ```
-3. Initialize git repository:
-   ```bash
-   git init
-   ```
-4. Create a new repository in Github with the same name as your new toolkit
-   > Note: Don't create a README, LICENSE or .gitignore when creating the repository because `arcade new` has already created these files for you.
-5. Add remote and push your code:
-   ```bash
-   git remote add origin https://github.com/torresmateo/sql_customers.git
-   git branch -M main
-   git add .
-   git commit -m "Initial commit"
-   git push -u origin main
-   ```
+# Arcade sql_customers Toolkit
 
-## Publishing to PyPi
+Query the customers database with an
 
-### Generating a PyPi API Key
+## Features
 
-1. Log into your PyPi account
-2. Navigate to your Account settings and add an API token
-3. Copy the token
-4. In your Github repository:
-   - Go to Settings > Secrets and variables > Actions
-   - Click "New repository secret"
-   - Name your secret `PYPI_TOKEN`
-   - Paste your API Token into the Secret field
+- The sql_customers toolkit does not have any features yet.
 
-### Creating a Release
+## Install
 
-1. Navigate to your Github repository and click on Releases
-2. Create a new tag that corresponds to the version in your toolkit's `pyproject.toml` file
-   > Note: This will be 0.0.1 for your first release
+Install this toolkit using pip:
 
-## How to install the toolkit:
-1. Run `make install` from the root of the repository
-
-## How to run tests:
-1. Run `make test` from the root of the repository
-
-## How to run evals:
-1. [Install the Arcade Engine Locally](https://docs.arcade.dev/home/install/local)
-2. Install extra dependencies needed for evals:
-   ```bash
-   pip install 'arcade-ai[evals]'
-   ```
-3. Log into Arcade:
-   ```bash
-   arcade login
-   ```
-4. Start the Arcade Engine and Worker:
-   ```bash
-   arcade dev
-   ```
-5. In a separate terminal, navigate to the `evals` directory:
-   ```bash
-   cd evals
-   ```
-5. Run the evals:
-   ```bash
-   arcade evals --host localhost --details
-   ```
+```bash
+pip install arcade_sql_customers
+```

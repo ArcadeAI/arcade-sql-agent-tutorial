@@ -1,5 +1,5 @@
 import logging
-import sqlite3
+import psycopg2
 from typing import Annotated, Optional
 
 from arcade.sdk import tool, ToolContext
@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-@tool(requires_secrets=["CUSTOMER_DATABASE_PATH"])
+@tool(requires_secrets=["database_url"])
 def direct_query(
     context: ToolContext,
     query: Annotated[str, "The query to run in the database"]
@@ -22,35 +22,29 @@ def direct_query(
 
     CREATE TABLE people (
         id INTEGER PRIMARY KEY,
-        Name TEXT,
-        Age INTEGER,
-        Location TEXT,
-        Occupation TEXT,
-        Email TEXT
+        name TEXT,
+        age INTEGER,
+        location TEXT,
+        occupation TEXT,
+        email TEXT
     )
 
     Example row
 
-    Name: William Hatfield
-    Age: 39
-    Location: Los Angeles, CA (IMPORTANT, use abbreviations for the state)
-    Occupation: Adult guidance worker
-    Email: ajohnson@hoover.net
+    name: William Hatfield
+    age: 39
+    location: Los Angeles, CA (IMPORTANT, use abbreviations for the state)
+    occupation: Adult guidance worker
+    email: ajohnson@hoover.net
     """
     logger.info("Starting query_customer_data function")
     logger.debug(f"Query received: {query}")
 
-    # Get the database URL
-    database_url = context.get_secret("CUSTOMER_DATABASE_PATH")
-    if not database_url:
-        logger.error("Database URL not found. Exiting function.")
-        return {"results": []}
-
     # Connect to the database
     try:
-        conn = get_database_connection(database_url)
-    except sqlite3.Error as e:
-        logger.error(f"Failed to connect to the database: {e}")
+        conn = get_database_connection(context)
+    except psycopg2.OperationalError:
+        logger.error("Failed to connect to the database")
         return {"results": []}
     cursor = conn.cursor()
 
@@ -64,7 +58,7 @@ def direct_query(
         column_names = [description[0] for description in cursor.description]
         logger.debug(f"Column names: {column_names}")
 
-    except sqlite3.Error as e:
+    except psycopg2.OperationalError as e:
         # Handle any database errors
         logger.error(f"Database error during query execution: {e}")
         return {"results": []}
@@ -79,7 +73,7 @@ def direct_query(
         logger.info("Database connection closed.")
 
 
-#@tool(requires_secrets=["CUSTOMER_DATABASE_PATH"])
+@tool(requires_secrets=["database_url"])
 def query_customer_data(
     context: ToolContext,
     columns_to_select: Annotated[
@@ -106,11 +100,11 @@ def query_customer_data(
 
     CREATE TABLE people (
         id INTEGER PRIMARY KEY,
-        Name TEXT,
-        Age INTEGER,
-        Location TEXT,
-        Occupation TEXT,
-        Email TEXT
+        name TEXT,
+        age INTEGER,
+        location TEXT,
+        occupation TEXT,
+        email TEXT
     )
 
     Example row
@@ -131,23 +125,16 @@ def query_customer_data(
     )
 
     # Get the database URL
-    print(context)
-    database_url = context.get_secret("customer_database_path")
-    if not database_url:
-        logger.error("Database URL not found. Exiting function.")
-        return {"results": []}
-
-    # Connect to the database
     try:
-        conn = get_database_connection(database_url)
-    except sqlite3.Error as e:
-        logger.error(f"Failed to connect to the database: {e}")
+        conn = get_database_connection(context)
+    except psycopg2.OperationalError:
+        logger.error("Failed to connect to the database")
         return {"results": []}
     cursor = conn.cursor()
 
     # Define valid columns based on the schema
-    valid_columns_list = ["id", "Name", "Age",
-                          "Location", "Occupation", "Email"]
+    valid_columns_list = ["id", "name", "age",
+                          "location", "occupation", "email"]
 
     try:
         # Determine columns to select
@@ -160,7 +147,7 @@ def query_customer_data(
                              f" {invalid_columns}")
                 return {"results": []}
             valid_columns = ", ".join(
-                [f'"{col}"' for col in columns_to_select])
+                [f'{col}' for col in columns_to_select])
             logger.debug(f"Columns to select: {valid_columns}")
         else:
             valid_columns = "*"
@@ -174,19 +161,19 @@ def query_customer_data(
         # Build WHERE clause with filters
         where_clauses = []
         if filter_by_id is not None:
-            where_clauses.append('"id" = ?')
+            where_clauses.append('id = %s')
             params.append(filter_by_id)
             logger.debug(f"Filtering by id: {filter_by_id}")
         if filter_by_age is not None:
-            where_clauses.append('"Age" = ?')
+            where_clauses.append('Age = %s')
             params.append(filter_by_age)
             logger.debug(f"Filtering by age: {filter_by_age}")
         if filter_by_name is not None:
-            where_clauses.append('"Name" LIKE ?')
+            where_clauses.append('Name ILIKE %s')
             params.append(f"%{filter_by_name}%")
             logger.debug(f"Filtering by Name: {filter_by_name}")
         if filter_by_location is not None:
-            where_clauses.append('"Location" LIKE ?')
+            where_clauses.append('Location ILIKE %s')
             params.append(f"%{filter_by_location}%")
             logger.debug(f"Filtering by Location: {filter_by_location}")
         if where_clauses:
@@ -202,7 +189,7 @@ def query_customer_data(
             logger.debug(f"Ordering by: {order_by}")
 
         # Add LIMIT clause
-        query += " LIMIT ?"
+        query += " LIMIT %s"
         params.append(limit)
         logger.debug(f"Limit set to: {limit}")
 
@@ -218,7 +205,7 @@ def query_customer_data(
         column_names = [description[0] for description in cursor.description]
         logger.debug(f"Column names: {column_names}")
 
-    except sqlite3.Error as e:
+    except psycopg2.OperationalError as e:
         # Handle any database errors
         logger.error(f"Database error during query execution: {e}")
         return {"results": []}
